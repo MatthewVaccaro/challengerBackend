@@ -5,27 +5,29 @@ const pg = require('pg');
 
 module.exports = {
 	development: {
-		client: 'pg',
-		connection: process.env.DB_URL,
+		client: 'sqlite3',
+		connection: {
+			filename: './data/challenges.db3'
+		},
 		migrations: {
 			directory: './data/migrations'
 		},
-		seeds: { directory: './data/seeds' }
-	},
-
-	testing: {
-		client: 'pg',
-		connection: process.env.DB_URL,
-		migrations: {
-			directory: './data/migrations'
+		seeds: { directory: './data/seeds' },
+		afterCreate: (conn, done) => {
+			// runs after a connection is made to the sqlite engine
+			conn.run('PRAGMA foreign_keys = ON', done); // turn on FK enforcement
 		},
-		seeds: { directory: './data/seeds' }
+		useNullAsDefault: true
 	},
-
 	production: {
 		client: 'pg',
-		connection: process.env.DB_URL,
+		connection: process.env.DATABASE_URL,
+		pool: {
+			min: 2,
+			max: 10
+		},
 		migrations: {
+			tablename: 'challenge_migrations',
 			directory: './data/migrations'
 		},
 		seeds: { directory: './data/seeds' }
