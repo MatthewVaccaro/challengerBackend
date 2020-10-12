@@ -1,0 +1,26 @@
+{
+  "name": "challengerbackend",
+  "version": "1.0.0",
+  "description": "challengerBackend",
+  "main": "index.js",
+  "scripts": {
+    "server": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MatthewVaccaro/challengerBackend.git"
+  },
+  "author": "Matt",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MatthewVaccaro/challengerBackend/issues"
+  },
+  "homepage": "https://github.com/MatthewVaccaro/challengerBackend#readme",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "knex": "^0.21.6",
+    "nodemon": "^2.0.4",
+    "pg": "^8.4.1"
+  }
+}
