@@ -32,15 +32,20 @@ function update(id, changes, table) {
 function joiner(id) {
 	return db
 		.select(
+			'submission.id',
 			'games.gameTitle',
 			'games.gameArtwork',
 			'submission.submissionUsername',
+			'submission.submissionComplete',
 			'challenges.challengeBrief',
-			'challenges.challengeType'
+			'challenges.challengeType',
+			'submission.submission_gameRef_id',
+			'submission.submission_challengeRef_id'
 		)
 		.from('games')
 		.join('submission', { 'games.id': 'submission.submission_gameRef_id' })
-		.join('challenges', { 'challenges.id': 'submission.submission_challengeRef_id' });
+		.join('challenges', { 'challenges.id': 'submission.submission_challengeRef_id' })
+		.where('submission.submissionComplete', false);
 }
 
 module.exports = {
