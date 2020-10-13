@@ -1,7 +1,7 @@
 const db = require('./data/config');
 
-async function basicAdd(element, table) {
-	return db.insert(element).into(table).then((res) => {
+async function add(data, table) {
+	return db.insert(data).into(table).then((res) => {
 		const id = res[0];
 		return db(table).where({ id });
 	});
@@ -15,6 +15,10 @@ function findById(id, table) {
 	return db(table).where({ id });
 }
 
+function findByRef(id, ref, table) {
+	return db(table).where(ref, id);
+}
+
 function remove(id, table) {
 	return db(table).where({ id }) ? db(table).where({ id }).del() : null;
 }
@@ -25,10 +29,26 @@ function update(id, changes, table) {
 	});
 }
 
+function joiner(id) {
+	return db
+		.select(
+			'games.gameTitle',
+			'games.gameArtwork',
+			'submission.submissionUsername',
+			'challenges.challengeBrief',
+			'challenges.challengeType'
+		)
+		.from('games')
+		.join('submission', { 'games.id': 'submission.submission_gameRef_id' })
+		.join('challenges', { 'challenges.id': 'submission.submission_challengeRef_id' });
+}
+
 module.exports = {
-	basicAdd,
+	add,
 	findAll,
 	findById,
+	findByRef,
 	remove,
-	update
+	update,
+	joiner
 };

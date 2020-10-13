@@ -6,7 +6,7 @@ router.post('/', async (req, res, next) => {
 	if (req.body.gameTitle && req.body.gameArtwork && req.body.gameGif) {
 		try {
 			const bodyData = req.body;
-			const retrieve = await db.basicAdd(bodyData, 'games');
+			const retrieve = await db.add(bodyData, 'games');
 			res.status(201).json(retrieve);
 		} catch (error) {
 			next(error);
