@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 // Routes
 const gameRoute = require('./routes/gamesRoute');
 const challengeRoute = require('./routes/challengesRoute');
@@ -7,6 +8,7 @@ const submissionRoute = require('./routes/submissionsRoute');
 const server = express();
 
 server.use(express.json());
+server.use(cors());
 server.use('/api/games', gameRoute);
 server.use('/api/challenges', challengeRoute);
 server.use('/api/submissions', submissionRoute);
