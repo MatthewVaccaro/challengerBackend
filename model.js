@@ -14,9 +14,9 @@ function findById(id, table) {
 }
 
 async function add(data, table) {
-	return db.insert(data).into(table).then((res) => {
-		const id = res[0];
-		return findById(id, table);
+	return db.insert(data).into(table).returning('id').then((res) => {
+		console.log(res[0]);
+		return findById(res[0], table);
 	});
 }
 
