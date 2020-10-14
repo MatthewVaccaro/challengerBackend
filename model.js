@@ -1,12 +1,5 @@
 const db = require('./data/config');
 
-async function add(data, table) {
-	return db.insert(data).into(table).then((res) => {
-		const id = res[0];
-		return db(table).where({ id });
-	});
-}
-
 function findAll(table, where) {
 	if (where === 'gameStatus') {
 		return db(table).where('gameStatus', true);
@@ -18,6 +11,13 @@ function findAll(table, where) {
 
 function findById(id, table) {
 	return db(table).where({ id });
+}
+
+async function add(data, table) {
+	return db.insert(data).into(table).then((res) => {
+		const id = res[0];
+		return findById(id, table);
+	});
 }
 
 function findByRef(id, ref, table) {
