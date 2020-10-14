@@ -7,8 +7,13 @@ async function add(data, table) {
 	});
 }
 
-function findAll(table) {
-	return db(table);
+function findAll(table, where) {
+	if (where === 'gameStatus') {
+		return db(table).where('gameStatus', true);
+	}
+	else {
+		return db(table);
+	}
 }
 
 function findById(id, table) {

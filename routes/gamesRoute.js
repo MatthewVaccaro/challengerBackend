@@ -20,7 +20,16 @@ router.post('/', async (req, res, next) => {
 // Find All Games Route
 router.get('/', async (req, res, next) => {
 	try {
-		const retrieve = await db.findAll('games');
+		const retrieve = await db.findAll('games', null);
+		res.status(200).json(retrieve);
+	} catch (error) {
+		next(error);
+	}
+});
+
+router.get('/gameStatus', async (req, res, next) => {
+	try {
+		const retrieve = await db.findAll('games', 'gameStatus');
 		res.status(200).json(retrieve);
 	} catch (error) {
 		next(error);
