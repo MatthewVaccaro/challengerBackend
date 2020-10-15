@@ -3,17 +3,22 @@ const router = require('express').Router();
 
 // Create Game Route
 router.post('/', async (req, res, next) => {
-	if (req.body.gameTitle && req.body.gameArtwork && req.body.gameGif) {
-		try {
-			const bodyData = req.body;
-			const retrieve = await db.add(bodyData, 'games');
-			res.status(201).json(retrieve);
-		} catch (error) {
-			next(error);
-		}
+	if (!req.body.gameTitle || !req.body.gameArtwork || !req.body.gameGif) {
+		return res.status(400).json('Woah, this is scary. Someone is missing a body!');
 	}
-	else {
-		res.status(400).json('Woah, this is scary. Someone is missing a body!');
+
+	const validateDuplicate = await db.findByAny('gameTitle', req.body.gameTitle, 'games');
+	if (validateDuplicate.length === 1) {
+		console.log(validateDuplicate);
+		return res.status(400).json('That game title already exisits!');
+	}
+
+	try {
+		const bodyData = req.body;
+		const retrieve = await db.add(bodyData, 'games');
+		res.status(201).json(retrieve);
+	} catch (error) {
+		next(error);
 	}
 });
 

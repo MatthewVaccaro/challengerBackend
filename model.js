@@ -24,6 +24,10 @@ function findByRef(id, ref, table) {
 	return db(table).where(ref, id);
 }
 
+function findByAny(ref1, ref2, table) {
+	return db(table).where(ref1, ref2);
+}
+
 function remove(id, table) {
 	return db(table).where({ id }) ? db(table).where({ id }).del() : null;
 }
@@ -58,6 +62,7 @@ module.exports = {
 	findAll,
 	findById,
 	findByRef,
+	findByAny,
 	remove,
 	update,
 	joiner
