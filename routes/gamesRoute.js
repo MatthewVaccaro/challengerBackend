@@ -9,7 +9,6 @@ router.post('/', async (req, res, next) => {
 
 	const validateDuplicate = await db.findByAny('gameTitle', req.body.gameTitle, 'games');
 	if (validateDuplicate.length === 1) {
-		console.log(validateDuplicate);
 		return res.status(400).json('That game title already exisits!');
 	}
 
