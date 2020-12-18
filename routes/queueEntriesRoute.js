@@ -1,5 +1,4 @@
-const { json } = require('express');
-const db = require('../model');
+const db = require('../controllers/basicController');
 const router = require('express').Router();
 
 router.post('/:gameID/:challengeID', async (req, res, next) => {

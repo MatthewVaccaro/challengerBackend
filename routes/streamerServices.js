@@ -1,4 +1,4 @@
-const db = require('../model');
+const db = require('../controllers/basicController');
 const router = require('express').Router();
 
 // router.get('/', (req, res, next) => {

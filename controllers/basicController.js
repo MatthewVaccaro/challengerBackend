@@ -1,4 +1,4 @@
-const db = require('./data/config');
+const db = require('../data/config');
 
 function findAll(table, where) {
 	if (where === 'gameStatus') {
@@ -15,7 +15,6 @@ function findById(id, table) {
 
 async function add(data, table) {
 	return db.insert(data).into(table).returning('id').then((res) => {
-		console.log(res[0]);
 		return findById(res[0], table);
 	});
 }
@@ -36,6 +35,21 @@ function update(id, changes, table) {
 	return db(table).where({ id }).update(changes).then((res) => {
 		return findById(id, table);
 	});
+}
+
+function getEntries(id) {
+	return db
+		.select(
+			'challenges.id',
+			'challenges.content',
+			'challenges.type',
+			'queueEntries.challenger',
+			'queueEntries.status',
+			'queueEntries.upvote'
+		)
+		.from('challenges')
+		.join('queueEntries', { 'challenges.id': 'queueEntries.challenge_id_fk' })
+		.where({ 'challenges.game_id_fk': id, 'queueEntries.status': 'started' });
 }
 
 function joiner(id) {
@@ -65,5 +79,6 @@ module.exports = {
 	findByAny,
 	remove,
 	update,
-	joiner
+	joiner,
+	getEntries
 };
