@@ -32,6 +32,7 @@ function remove(id, table) {
 }
 
 function update(id, changes, table) {
+	console.log('ran -------');
 	return db(table).where({ id }).update(changes).then((res) => {
 		return findById(id, table);
 	});
