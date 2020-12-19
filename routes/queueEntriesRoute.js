@@ -1,4 +1,4 @@
-const db = require('../controllers/basicController');
+const db = require('../models/basicModel');
 const router = require('express').Router();
 
 router.post('/:gameID/:challengeID', async (req, res, next) => {

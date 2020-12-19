@@ -3,8 +3,8 @@ require('dotenv').config();
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 //Controlers
-const db = require('../controllers/basicController');
-const authControler = require('../controllers/authController');
+const db = require('../models/basicModel');
+const authControler = require('../models/authModel');
 
 const table = 'streamers';
 
