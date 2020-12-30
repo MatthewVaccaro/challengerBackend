@@ -110,6 +110,7 @@ router.put('/updatePassword', async (req, res, next) => {
 	}
 });
 
+// ! Needs Updating with middleware
 router.delete('/:id', async (req, res, next) => {
 	try {
 		const id = req.params.id;

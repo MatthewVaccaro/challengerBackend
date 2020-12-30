@@ -1,9 +1,31 @@
 const db = require('../models/basicModel');
 const router = require('express').Router();
+const helper = require('../utils/helperFunctions');
+const validateToken = require('../middleware/validateToken');
 
-// router.get('/', (req, res, next) => {
-// 	res.status(200).json('Challenges working');
-// });
+const gamesTable = 'games';
+const challengeTable = 'challenges';
+const streamerTable = 'streamers';
+
+router.post('/createGame/:streamID', validateToken(), async (req, res, next) => {
+	try {
+		const validateStreamer = await db.findById(req.params.streamID, streamerTable);
+		helper.checkLength(validateStreamer, "Steamer doesn't exist", res);
+
+		const findDuplicate = await db.findByAny('title', req.body.title, gamesTable);
+		helper.checkUnique(findDuplicate, 'This already exisits', res);
+
+		const data = req.body;
+		data.streamer_id_fk = req.params.streamID;
+
+		const newGame = await db.add(data, gamesTable);
+		res.status(201).json(newGame[0]);
+	} catch (error) {
+		next(error);
+	}
+});
+
+// ! ---- Everything below is old and needs to loves ------
 
 // Create Challenge Route
 router.post('/:id', async (req, res, next) => {
