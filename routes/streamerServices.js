@@ -9,15 +9,20 @@ const streamerTable = 'streamers';
 
 router.post('/createGame/:streamID', validateToken(), async (req, res, next) => {
 	try {
+		//* Valdiate Streamer
 		const validateStreamer = await db.findById(req.params.streamID, streamerTable);
-		helper.checkLength(validateStreamer, "Steamer doesn't exist", res);
-
+		helper.checkLength(validateStreamer, "Steamer doesn't exists", res);
+		//* Valdiate body contents
+		if (!req.body.title || !req.body.artwork) {
+			return res.status(400).json({ message: 'No body was posted' });
+		}
+		//* Valdiate no duplicates
 		const findDuplicate = await db.findByAny('title', req.body.title, gamesTable);
-		helper.checkUnique(findDuplicate, 'This already exisits', res);
-
+		helper.checkUnique(findDuplicate, 'This already exists', res);
+		//* Build Obj
 		const data = req.body;
 		data.streamer_id_fk = req.params.streamID;
-
+		//* Add to table
 		const newGame = await db.add(data, gamesTable);
 		res.status(201).json(newGame[0]);
 	} catch (error) {
@@ -25,39 +30,41 @@ router.post('/createGame/:streamID', validateToken(), async (req, res, next) => 
 	}
 });
 
-// ! ---- Everything below is old and needs to loves ------
-
 // Create Challenge Route
-router.post('/:id', async (req, res, next) => {
-	// Is there content
-	if (!req.body.challengeBrief && !req.body.challengeType && !req.params.id) {
-		return res.status(400).json('Woah, this is scary. Someone is missing a body!');
-	}
-	const bodyData = {
-		challengeBrief: req.body.challengeBrief,
-		challengeType: req.body.challengeType,
-		challenges_gameRef_id: req.params.id
-	};
-	// Is the type correct
-	if (bodyData.challengeType !== 'meme') {
-		return res.status(400).json("Wait! That's not an acceptable type!");
-	}
-
-	// does it exsist
-	const validateId = await db.findById(req.params.id, 'games');
-	// console.log('---->', validateId);
-	if (validateId.length === 0) {
-		return res.status(400).json('Sadly, no ID was found :/');
-	}
-
+router.post('/createChallenge/:gameID', validateToken(), async (req, res, next) => {
+	console.log('body', req.body);
 	try {
-		const retrieve = await db.add(bodyData, 'challenges');
-		res.status(201).json(retrieve);
+		//* Validate the game exists
+		const validateGame = await db.findById(req.params.gameID, gamesTable);
+		helper.checkLength(validateGame, "Game doesn't exists", res);
+		//* Validate body exists
+		if (!req.body.content || !req.body.type) {
+			return res.status(400).json({ message: 'No body was posted' });
+		}
+		//* Validate type
+		if (
+			req.body.type != 'meme' &&
+			req.body.type != 'troll' &&
+			req.body.type != 'difficult' &&
+			req.body.type != 'custom'
+		) {
+			return res.status(400).json({ message: 'type not recognized' });
+		}
+		//* Validate unique
+		const findDuplicate = await db.findByAny('content', req.body.content, challengeTable);
+		helper.checkUnique(findDuplicate, 'This already exists', res);
+		//* Build Obj
+		const data = req.body;
+		data.game_id_fk = req.params.gameID;
+		//* Add to table
+		const newChallenge = await db.add(data, challengeTable);
+		res.status(201).json(newChallenge[0]);
 	} catch (error) {
 		next(error);
 	}
 });
 
+// ! ---- Everything below is old and needs to loves ------
 // Find All Challenges for one game Route
 router.get('/:id', async (req, res, next) => {
 	try {
