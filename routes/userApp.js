@@ -1,6 +1,7 @@
 const db = require('../models/basicModel');
+const entryModel = require('../models/entriesModel');
 const router = require('express').Router();
-const checkLength = require('../utils/helperFunctions');
+const helper = require('../utils/helperFunctions');
 
 router.get('/:streamer', async (req, res, next) => {
 	try {
@@ -24,14 +25,14 @@ router.get('/allChallenges/:streamer/:gameId', async (req, res, next) => {
 		const game = req.params.gameId; // Int
 
 		const retrieveUser = await db.findByAny('username', streamer, 'streamers');
-		checkLength(retrieveUser, 'Streamer not found', res);
+		helper.checkLength(retrieveUser, 'Streamer not found', res);
 		delete retrieveUser[0].password;
 
 		const retrieveGame = await db.findById(game, 'games');
-		checkLength(retrieveGame, 'Game not found', res);
+		helper.checkLength(retrieveGame, 'Game not found', res);
 
 		const retrieveChallenges = await db.findByRef(game, 'game_id_fk', 'challenges');
-		checkLength(retrieveChallenges, 'Challenges not found', res);
+		helper.checkLength(retrieveChallenges, 'Challenges not found', res);
 
 		const results = {
 			streamer: retrieveUser[0],
@@ -55,10 +56,10 @@ router.post('/queueEntry', async (req, res, next) => {
 		}
 
 		const retrieveGame = await db.findById(game_id_fk, 'games');
-		checkLength(retrieveGame, 'Game not found', res);
+		helper.checkLength(retrieveGame, 'Game not found', res);
 
 		const retrieveChallenges = await db.findById(challenge_id_fk, 'challenges');
-		checkLength(retrieveChallenges, 'Challenges not found', res);
+		helper.checkLength(retrieveChallenges, 'Challenges not found', res);
 
 		data.status = 'rejected';
 
@@ -74,10 +75,10 @@ router.get('/allEntries/:game_id', async (req, res, next) => {
 		const game = req.params.game_id;
 
 		const retrieveGame = await db.findById(game, 'games');
-		checkLength(retrieveGame, 'Game not found', res);
+		helper.checkLength(retrieveGame, 'Game not found', res);
 
-		const retrieveEntries = await db.getEntries(game);
-		checkLength(retrieveEntries, 'Entries not found', res);
+		const retrieveEntries = await entryModel.getEntries(game);
+		helper.checkLength(retrieveEntries, 'Entries not found', res);
 
 		res.status(200).json(retrieveEntries);
 	} catch (error) {
@@ -91,7 +92,7 @@ router.post('/customChallenge/:game_id', async (req, res, next) => {
 		const { content, type } = data;
 
 		const retrieveGame = await db.findById(game, 'games');
-		checkLength(retrieveGame, 'Game not found', res);
+		helper.checkLength(retrieveGame, 'Game not found', res);
 
 		if (!content || !type || type != 'custom') {
 			return res.status(400).json({ message: 'Missing info' });
@@ -106,16 +107,16 @@ router.post('/customChallenge/:game_id', async (req, res, next) => {
 	}
 });
 
-router.put('/entryUpVote/:id', async (req, res, next) => {
+router.put('/entryUpVote/:etnryID', async (req, res, next) => {
 	try {
-		const id = req.params.id;
+		const id = req.params.etnryID;
 
 		if (!req.body.vote) {
 			res.status(400).json({ message: 'missing vote key' });
 		}
 
 		const retrieveEntry = await db.findById(id, 'queueEntries');
-		checkLength(retrieveEntry, 'Entry not found', res);
+		helper.checkLength(retrieveEntry, 'Entry not found', res);
 
 		if (retrieveEntry[0].status != 'started') {
 			return res.status(400).json({ message: "Entry isn't in the queue" });
@@ -129,8 +130,22 @@ router.put('/entryUpVote/:id', async (req, res, next) => {
 			retrieveEntry[0].upvote--;
 		}
 
-		const results = await db.update(id, retrieveEntry[0], 'queueEntries');
+		const update = await db.update(id, retrieveEntry[0], 'queueEntries');
+		const results = await entryModel.entryById(id);
 		res.status(200).json(results);
+	} catch (error) {
+		next(error);
+	}
+});
+
+// ! Using for testing right now--- delete later -----
+
+router.put('/updateStreamer/testUser', async (req, res, next) => {
+	try {
+		const data = req.body;
+		console.log('bod', req.body);
+		const updateSean = await db.update(12, data, 'streamers');
+		res.status(200).json(updateSean);
 	} catch (error) {
 		next(error);
 	}

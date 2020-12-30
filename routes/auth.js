@@ -6,12 +6,18 @@ const bcrypt = require('bcrypt');
 const db = require('../models/basicModel');
 const authControler = require('../models/authModel');
 
+//helper
+const helper = require('../utils/helperFunctions');
+
 const table = 'streamers';
 
 router.post('/register', async (req, res, next) => {
 	try {
 		const data = req.body;
-		const { username, password, email } = data;
+		let { username, password, email } = data;
+
+		username = helper.lowerCase(username);
+		email = helper.lowerCase(email);
 
 		if (!username || !password) {
 			return res.status(404).json({ message: 'missing info' });
@@ -20,13 +26,8 @@ router.post('/register', async (req, res, next) => {
 		const uniqueUsername = await db.findByAny('username', username, table);
 		const uniqueEmail = await db.findByAny('email', email, table);
 
-		if (uniqueEmail.length > 0) {
-			return res.status(400).json({ message: 'Email already exisits' });
-		}
-
-		if (uniqueUsername > 0) {
-			return res.status(400).json({ message: 'Username already exisits' });
-		}
+		helper.checkUnique(uniqueUsername, 'userName already exisits', res);
+		helper.checkUnique(uniqueEmail, 'Email already exisits', res);
 
 		const create = await authControler.register(data);
 		res.status(201).json(create);
@@ -70,6 +71,7 @@ router.post('/login', async (req, res, next) => {
 
 router.put('/updatePassword', async (req, res, next) => {
 	try {
+		console.log(req.body);
 		const { email, password, newPassword } = req.body;
 		if (!email || !password || !newPassword) {
 			return res.status(400).json({ message: 'Missing information' });
@@ -80,7 +82,7 @@ router.put('/updatePassword', async (req, res, next) => {
 		}
 
 		const foundUser = await authControler.findUser('email', email, table);
-		if (foundUser.length === 0) {
+		if (!foundUser) {
 			return res.status(400).json({ message: "This user doesn't exisit" });
 		}
 

@@ -32,25 +32,10 @@ function remove(id, table) {
 }
 
 function update(id, changes, table) {
-	console.log('ran -------');
+	console.log(id, changes, table);
 	return db(table).where({ id }).update(changes).then((res) => {
 		return findById(id, table);
 	});
-}
-
-function getEntries(id) {
-	return db
-		.select(
-			'challenges.id',
-			'challenges.content',
-			'challenges.type',
-			'queueEntries.challenger',
-			'queueEntries.status',
-			'queueEntries.upvote'
-		)
-		.from('challenges')
-		.join('queueEntries', { 'challenges.id': 'queueEntries.challenge_id_fk' })
-		.where({ 'challenges.game_id_fk': id, 'queueEntries.status': 'started' });
 }
 
 function joiner(id) {
@@ -80,6 +65,5 @@ module.exports = {
 	findByAny,
 	remove,
 	update,
-	joiner,
-	getEntries
+	joiner
 };
