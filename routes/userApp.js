@@ -1,7 +1,12 @@
 const db = require('../models/basicModel');
+const challengeModel = require('../models/challengesModel');
 const entryModel = require('../models/entriesModel');
 const router = require('express').Router();
 const helper = require('../utils/helperFunctions');
+
+const gamesTable = 'games';
+const challengeTable = 'challenges';
+const streamerTable = 'streamers';
 
 router.get('/:streamer', async (req, res, next) => {
 	try {
@@ -19,28 +24,15 @@ router.get('/:streamer', async (req, res, next) => {
 	}
 });
 
-router.get('/allChallenges/:streamer/:gameId', async (req, res, next) => {
+router.get('/allChallenges/:gameID', async (req, res, next) => {
 	try {
-		const streamer = req.params.streamer; //obj
-		const game = req.params.gameId; // Int
-
-		const retrieveUser = await db.findByAny('username', streamer, 'streamers');
-		helper.checkLength(retrieveUser, 'Streamer not found', res);
-		delete retrieveUser[0].password;
-
-		const retrieveGame = await db.findById(game, 'games');
-		helper.checkLength(retrieveGame, 'Game not found', res);
-
-		const retrieveChallenges = await db.findByRef(game, 'game_id_fk', 'challenges');
+		//* Find and Validate the game exists
+		const findGame = await db.findById(req.params.gameID, gamesTable);
+		helper.checkLength(findGame, "Game doesn't exists", res);
+		//* Get all challenges
+		const retrieveChallenges = await challengeModel.getChallenges(req.params.gameID);
 		helper.checkLength(retrieveChallenges, 'Challenges not found', res);
-
-		const results = {
-			streamer: retrieveUser[0],
-			game: retrieveGame[0],
-			challenges: retrieveChallenges
-		};
-
-		res.status(200).json(results);
+		res.status(200).json(retrieveChallenges);
 	} catch (error) {
 		next(error);
 	}
