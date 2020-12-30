@@ -2,28 +2,49 @@ const { table } = require('console');
 
 exports.up = function(knex) {
 	return knex.schema
+		.createTable('streamers', (table) => {
+			table.increments('id');
+			table.text('email').notNullable();
+			table.text('username').notNullable();
+			table.text('password').notNullable();
+			table.text('streamLink').notNullable();
+			table.text('mainColor').defaultTo('333333');
+			table.text('secondaryColor').defaultTo('ffffff');
+			table.text('mainTextColor').defaultTo('ffffff');
+			table.text('secondaryTextColor').defaultTo('333333');
+			table.boolean('live').defaultTo(false);
+			table.integer('game_id_fk');
+			table.boolean('customChallenges').defaultTo(true);
+			table.text('avatar');
+		})
 		.createTable('games', (table) => {
 			table.increments('id');
-			table.text('gameTitle').unique().notNullable();
-			table.text('gameArtwork');
-			table.text('gameGif');
-			table.boolean('gameStatus').defaultTo(false);
+			table.integer('streamer_id_fk').references('id').inTable('streamers');
+			table.text('title').unique().notNullable();
+			table.text('artwork');
 		})
 		.createTable('challenges', (table) => {
 			table.increments('id');
-			table.text('challengeBrief').unique().notNullable();
-			table.string('challengeType').notNullable();
-			table.integer('challenges_gameRef_id').references('id').inTable('games');
+			table.text('content').unique().notNullable();
+			table.string('type').notNullable();
+			table.integer('game_id_fk').references('id').inTable('games');
 		})
-		.createTable('submission', (table) => {
+		.createTable('queueEntries', (table) => {
 			table.increments('id');
-			table.string('submissionUsername').notNullable();
-			table.boolean('submissionComplete').defaultTo(false);
-			table.integer('submission_gameRef_id').references('id').inTable('games');
-			table.integer('submission_challengeRef_id').references('id').inTable('challenges');
+			table.string('challenger').notNullable();
+			table.text('status').notNullable();
+			table.integer('game_id_fk').references('id').inTable('games');
+			table.integer('challenge_id_fk').references('id').inTable('challenges');
+			table.datetime('startDate');
+			table.datetime('endDate');
+			table.integer('upvote').defaultTo(0);
 		});
 };
 
 exports.down = function(knex) {
-	return knex.schema.dropTableIfExists('games').dropTableIfExists('challenges').dropTableIfExists('submission');
+	return knex.schema
+		.dropTableIfExists('queueEntries')
+		.dropTableIfExists('challenges')
+		.dropTableIfExists('games')
+		.dropTableIfExists('streamers');
 };
