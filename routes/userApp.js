@@ -18,7 +18,7 @@ router.get('/:streamer', async (req, res, next) => {
 		}
 		delete retrieveUser[0].password;
 
-		res.status(200).json(retrieveUser);
+		return res.status(200).json(retrieveUser);
 	} catch (error) {
 		next(error);
 	}
@@ -32,47 +32,53 @@ router.get('/allChallenges/:gameID', async (req, res, next) => {
 		//* Get all challenges
 		const retrieveChallenges = await challengeModel.getChallenges(req.params.gameID);
 		helper.checkLength(retrieveChallenges, 'Challenges not found', res);
-		res.status(200).json(retrieveChallenges);
+		return res.status(200).json(retrieveChallenges);
 	} catch (error) {
 		next(error);
 	}
 });
 
-router.post('/queueEntry', async (req, res, next) => {
+router.post('/queueEntry/:gameID', async (req, res, next) => {
 	try {
-		const data = req.body;
-		const { game_id_fk, challenge_id_fk } = data;
+		//* Find and Validate the game exists
+		const validateGame = await db.findById(req.params.gameID, gamesTable);
+		helper.checkLength(validateGame, "Game doesn't exists", res);
 
-		if (!game_id_fk || !challenge_id_fk) {
-			res.status(400).json({ message: 'Missing FKs' });
+		if (!req.body.challenge_id_fk) {
+			return res.status(400).json({ message: 'Missing info' });
 		}
 
-		const retrieveGame = await db.findById(game_id_fk, 'games');
-		helper.checkLength(retrieveGame, 'Game not found', res);
-
-		const retrieveChallenges = await db.findById(challenge_id_fk, 'challenges');
+		const retrieveChallenges = await db.findById(req.body.challenge_id_fk, 'challenges');
 		helper.checkLength(retrieveChallenges, 'Challenges not found', res);
 
-		data.status = 'rejected';
+		const data = {
+			challenger: req.body.challenger,
+			status: 'started',
+			game_id_fk: req.params.gameID,
+			challenge_id_fk: req.body.challenge_id_fk,
+			startDate: new Date().toISOString()
+		};
 
 		const result = await db.add(data, 'queueEntries');
+		console.log(result);
 
-		res.status(201).json(result);
+		return res.status(201).json(result);
 	} catch (error) {
 		next(error);
 	}
 });
-router.get('/allEntries/:game_id', async (req, res, next) => {
+router.get('/allEntries/:gameID', async (req, res, next) => {
 	try {
-		const game = req.params.game_id;
+		const game = req.params.gameID;
 
 		const retrieveGame = await db.findById(game, 'games');
+		console.log('retrieveGame', retrieveGame);
 		helper.checkLength(retrieveGame, 'Game not found', res);
 
 		const retrieveEntries = await entryModel.getEntries(game);
 		helper.checkLength(retrieveEntries, 'Entries not found', res);
 
-		res.status(200).json(retrieveEntries);
+		return res.status(200).json(retrieveEntries);
 	} catch (error) {
 		next(error);
 	}
