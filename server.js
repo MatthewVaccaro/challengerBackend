@@ -4,7 +4,6 @@ const cors = require('cors');
 const auth = require('./routes/auth');
 const userApp = require('./routes/userApp');
 const streamerServices = require('./routes/streamerServices');
-const queueEntriesRoute = require('./routes/queueEntriesRoute');
 
 const server = express();
 
@@ -13,7 +12,6 @@ server.use(cors());
 server.use('/api/auth', auth);
 server.use('/api/userApp', userApp);
 server.use('/api/streamerServices', streamerServices);
-server.use('/api/queueEntries', queueEntriesRoute);
 
 server.get('/', (req, res) => {
 	res.status(200).json({ message: 'Node Challenger Backend' });
