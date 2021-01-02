@@ -1,73 +1,15 @@
 const router = require('express').Router();
 require('dotenv').config();
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
-//Controlers
-const db = require('../models/basicModel');
-const authControler = require('../models/authModel');
+//User App Request Controllers
+const POST_login = require('../controllers/authRequests/POST_login');
+const POST_register = require('../controllers/authRequests/POST_register');
 
-//helper
-const helper = require('../utils/helperFunctions');
+//Routes
+router.post('/register', POST_register());
 
-const table = 'streamers';
+router.post('/login', POST_login());
 
-router.post('/register', async (req, res, next) => {
-	try {
-		const data = req.body;
-		let { username, password, email } = data;
-
-		username = helper.lowerCase(username);
-		email = helper.lowerCase(email);
-
-		if (!username || !password) {
-			return res.status(404).json({ message: 'missing info' });
-		}
-
-		const uniqueUsername = await db.findByAny('username', username, table);
-		const uniqueEmail = await db.findByAny('email', email, table);
-
-		helper.checkUnique(uniqueUsername, 'userName already exisits', res);
-		helper.checkUnique(uniqueEmail, 'Email already exisits', res);
-
-		const create = await authControler.register(data);
-		res.status(201).json(create);
-	} catch (error) {
-		next(error);
-	}
-});
-
-router.post('/login', async (req, res, next) => {
-	try {
-		const { email, password } = req.body;
-		if (!email || !password) {
-			return res.status(400).json({ message: 'Missing information' });
-		}
-
-		const foundUser = await authControler.findUser('email', email, table);
-		if (foundUser.length === 0) {
-			return res.status(400).json({ message: "This user doesn't exisit" });
-		}
-
-		const validatePassword = await bcrypt.compareSync(password, foundUser.password);
-		if (!validatePassword) {
-			return res.status(400).json({ message: 'wrong password or email address' });
-		}
-
-		const payload = {
-			id: foundUser.id,
-			email: foundUser.email
-		};
-
-		const token = jwt.sign(payload, process.env.TOKEN);
-
-		return res.status(200).json({
-			message: `Welcome ${foundUser.username}`,
-			token: token
-		});
-	} catch (error) {
-		next(error);
-	}
-});
+// ! Needs to be looked at agian
 
 router.put('/updatePassword', async (req, res, next) => {
 	try {
@@ -110,7 +52,6 @@ router.put('/updatePassword', async (req, res, next) => {
 	}
 });
 
-// ! Needs Updating with middleware
 router.delete('/:id', async (req, res, next) => {
 	try {
 		const id = req.params.id;
