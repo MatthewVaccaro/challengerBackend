@@ -5,7 +5,7 @@ function POST_queueEntry() {
 	return async (req, res, next) => {
 		try {
 			//* Find and Validate the game exists
-			const validateGame = await db.findById(req.params.gameID, gamesTable);
+			const validateGame = await db.findById(req.params.gameID, 'games');
 			helper.checkLength(validateGame, "Game doesn't exists", res);
 
 			if (!req.body.challenge_id_fk) {

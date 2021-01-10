@@ -1,5 +1,5 @@
 const db = require('../../models/basicModel');
-const entryModel = require('../../models/basicModel');
+const entryModel = require('../../models/entriesModel');
 const helper = require('../../utils/helperFunctions');
 
 function GET_allQueueEntry() {
