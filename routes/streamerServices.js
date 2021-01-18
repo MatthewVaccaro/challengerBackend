@@ -8,7 +8,7 @@ const db = require('../models/basicModel');
 
 router.post('/createGame', POST_createGame());
 
-router.post('/createChallenge/:gameID', validateToken(), POST_createChallenge());
+router.post('/createChallenge/streamer/:streamerID/game/:gameID', validateToken(), POST_createChallenge());
 
 router.get('/getGame/:gameID', GET_singleGame());
 

@@ -10,13 +10,13 @@ const PUT_entryUpVote = require('../controllers/userAppRequests/PUT_entryUpVote'
 
 router.get('/:streamer', GET_streamer());
 
-router.get('/allChallenges/:gameID', GET_allChallenges());
+router.get('/allChallenges/streamer/:streamerID/game/:gameID', GET_allChallenges());
 
-router.post('/queueEntry/:gameID', POST_queueEntry());
+router.post('/queueEntry/streamer/:streamerID/game/:gameID', POST_queueEntry());
 
-router.get('/allEntries/:gameID', GET_allQueueEntry());
+router.get('/allEntries/streamer/:streamerID/game/:gameID', GET_allQueueEntry());
 
-router.post('/customChallenge/:game_id', POST_customChallenge());
+router.post('/customChallenge/streamer/:streamerID/game/:gameID', POST_customChallenge());
 
 router.put('/entryUpVote/:entryID', PUT_entryUpVote());
 
@@ -26,7 +26,7 @@ router.put('/entryUpVote/:entryID', PUT_entryUpVote());
 // 	try {
 // 		const data = req.body;
 // 		console.log('bod', req.body);
-// 		const updateSean = await db.update(12, data, 'streamers');
+// 		const updateSean = await db.update(1, data, 'streamers');
 // 		res.status(200).json(updateSean);
 // 	} catch (error) {
 // 		next(error);

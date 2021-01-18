@@ -1,32 +1,40 @@
 const db = require('../data/config');
 
-function getEntries(id) {
+function getEntries(streamID, gameID) {
 	return db
 		.select(
-			'challenges.id',
+			'challenges.id as challenge_id',
 			'challenges.content',
 			'challenges.type',
-			'queueEntries.id',
+			'queueEntries.id as entry_id',
 			'queueEntries.challenger',
 			'queueEntries.status',
-			'queueEntries.upvote'
+			'queueEntries.upvote',
+			'queueEntries.startDate',
+			'queueEntries.endDate'
 		)
 		.from('challenges')
 		.join('queueEntries', { 'challenges.id': 'queueEntries.challenge_id_fk' })
 		.orderBy('queueEntries.upvote', 'desc')
-		.where({ 'challenges.game_id_fk': id, 'queueEntries.status': 'started' });
+		.where({
+			'queueEntries.streamer_id_fk': streamID,
+			'queueEntries.game_id_fk': gameID,
+			'queueEntries.status': 'started'
+		});
 }
 
 function entryById(id) {
 	return db
 		.select(
-			'challenges.id',
+			'challenges.id as challenge_id',
 			'challenges.content',
 			'challenges.type',
-			'queueEntries.id',
+			'queueEntries.id as entry_id',
 			'queueEntries.challenger',
 			'queueEntries.status',
-			'queueEntries.upvote'
+			'queueEntries.upvote',
+			'queueEntries.startDate',
+			'queueEntries.endDate'
 		)
 		.from('challenges')
 		.join('queueEntries', { 'challenges.id': 'queueEntries.challenge_id_fk' })
