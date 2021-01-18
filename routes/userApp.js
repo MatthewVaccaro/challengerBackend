@@ -26,7 +26,7 @@ router.put('/entryUpVote/:entryID', PUT_entryUpVote());
 // 	try {
 // 		const data = req.body;
 // 		console.log('bod', req.body);
-// 		const updateSean = await db.update(12, data, 'streamers');
+// 		const updateSean = await db.update(1, data, 'streamers');
 // 		res.status(200).json(updateSean);
 // 	} catch (error) {
 // 		next(error);
