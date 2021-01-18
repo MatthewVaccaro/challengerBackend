@@ -11,9 +11,6 @@ function POST_createGame() {
 			if (!req.body.title || !req.body.artwork) {
 				return res.status(400).json({ message: 'No body was posted' });
 			}
-			//* Valdiate no duplicates
-			const findDuplicate = await db.findByAny('title', req.body.title, 'games');
-			helper.checkUnique(findDuplicate, 'This already exists', res);
 			//* Build Obj
 			const data = req.body;
 			data.streamer_id_fk = req.params.streamID;

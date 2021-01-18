@@ -12,4 +12,14 @@ router.post('/createChallenge/:gameID', validateToken(), POST_createChallenge())
 
 router.get('/getGame/:gameID', GET_singleGame());
 
+router.put('/streamer/:streamID', async (req, res, next) => {
+	try {
+		const updateStreamer = await db.update(req.params.streamID, req.body, 'streamers');
+
+		return res.status(200).json(updateStreamer);
+	} catch (error) {
+		next(error);
+	}
+});
+
 module.exports = router;
