@@ -12,7 +12,7 @@ router.get('/:streamer', GET_streamer());
 
 router.get('/allChallenges/streamer/:streamerID/game/:gameID', GET_allChallenges());
 
-router.post('/queueEntry/:gameID', POST_queueEntry());
+router.post('/queueEntry/streamer/:streamerID/game/:gameID', POST_queueEntry());
 
 router.get('/allEntries/:gameID', GET_allQueueEntry());
 
