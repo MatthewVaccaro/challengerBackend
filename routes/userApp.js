@@ -14,7 +14,7 @@ router.get('/allChallenges/streamer/:streamerID/game/:gameID', GET_allChallenges
 
 router.post('/queueEntry/streamer/:streamerID/game/:gameID', POST_queueEntry());
 
-router.get('/allEntries/:gameID', GET_allQueueEntry());
+router.get('/allEntries/streamer/:streamerID/game/:gameID', GET_allQueueEntry());
 
 router.post('/customChallenge/:game_id', POST_customChallenge());
 
