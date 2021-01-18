@@ -6,7 +6,7 @@ const POST_createChallenge = require('../controllers/streamerServicesRequests/PO
 const GET_singleGame = require('../controllers/streamerServicesRequests/GET_singleGame');
 const db = require('../models/basicModel');
 
-router.post('/createGame/:streamID', validateToken(), POST_createGame());
+router.post('/createGame', POST_createGame());
 
 router.post('/createChallenge/:gameID', validateToken(), POST_createChallenge());
 
