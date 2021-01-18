@@ -13,13 +13,12 @@ exports.up = function(knex) {
 			table.text('mainTextColor').defaultTo('ffffff');
 			table.text('secondaryTextColor').defaultTo('333333');
 			table.boolean('live').defaultTo(false);
-			table.integer('game_id_fk');
+			table.integer('game_id');
 			table.boolean('customChallenges').defaultTo(true);
 			table.text('avatar');
 		})
 		.createTable('games', (table) => {
 			table.increments('id');
-			table.integer('streamer_id_fk').references('id').inTable('streamers');
 			table.text('title').unique().notNullable();
 			table.text('artwork');
 		})
@@ -27,6 +26,7 @@ exports.up = function(knex) {
 			table.increments('id');
 			table.text('content').unique().notNullable();
 			table.string('type').notNullable();
+			table.integer('streamer_id_fk').references('id').inTable('streamers');
 			table.integer('game_id_fk').references('id').inTable('games');
 		})
 		.createTable('queueEntries', (table) => {
@@ -34,6 +34,7 @@ exports.up = function(knex) {
 			table.string('challenger').notNullable();
 			table.text('status').notNullable();
 			table.integer('game_id_fk').references('id').inTable('games');
+			table.integer('streamer_id_fk').references('id').inTable('streamers');
 			table.integer('challenge_id_fk').references('id').inTable('challenges');
 			table.datetime('startDate');
 			table.datetime('endDate');
