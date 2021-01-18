@@ -11,7 +11,7 @@ function validateToken() {
 
 			jwt.verify(token, process.env.TOKEN, (err, decode) => {
 				if (err) {
-					res.status(400).json({ message: 'Missing credentials - Beta' });
+					res.status(400).json({ message: 'Missing credentials - Beta', error: err });
 				}
 			});
 
