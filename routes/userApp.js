@@ -10,7 +10,7 @@ const PUT_entryUpVote = require('../controllers/userAppRequests/PUT_entryUpVote'
 
 router.get('/:streamer', GET_streamer());
 
-router.get('/allChallenges/:gameID', GET_allChallenges());
+router.get('/allChallenges/streamer/:streamerID/game/:gameID', GET_allChallenges());
 
 router.post('/queueEntry/:gameID', POST_queueEntry());
 
